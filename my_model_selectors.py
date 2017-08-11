@@ -75,6 +75,7 @@ class SelectorBIC(ModelSelector):
 
         :return: GaussianHMM object
         """
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         models = dict()      
         try:
             for states_number in range(self.min_n_components, self.max_n_components + 1):
