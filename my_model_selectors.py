@@ -1,6 +1,7 @@
 import math
 import statistics
 import warnings
+import sys
 
 import numpy as np
 from hmmlearn.hmm import GaussianHMM
@@ -29,7 +30,7 @@ class ModelSelector(object):
         self.verbose = verbose
 
     def select(self):
-        raise NotImplementedError
+        pass
 
     def base_model(self, num_states):
         # with warnings.catch_warnings():
@@ -74,10 +75,28 @@ class SelectorBIC(ModelSelector):
 
         :return: GaussianHMM object
         """
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        models = dict()      
+        try:
+            for states_number in range(self.min_n_components, self.max_n_components + 1):
+                model = self.base_model(states_number)
+                logL = model.score(self.X, self.lengths)
+                logN = np.log(len(self.X))
 
-        # TODO implement model selection based on BIC scores
-        raise NotImplementedError
+                # Number of parameters is the sum of following items:
+                #   - Initial state probabilities = number of states
+                #   - Transition probabilities = number of states * (number of states - 1)
+                #   - Emission probabilities = number of states * number of features * 2
+                p = states_number + states_number * (states_number - 1) + states_number * model.n_features * 2
+
+                bic = -2 * logL + p * logN
+                models[model] = bic
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+        
+        best_model = min(models, key=models.get)
+        print (best_model, models[best_model])
+        
+        return best_model
 
 
 class SelectorDIC(ModelSelector):
