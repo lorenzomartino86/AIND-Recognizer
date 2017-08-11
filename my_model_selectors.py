@@ -94,7 +94,6 @@ class SelectorBIC(ModelSelector):
             print ("Unexpected error:", sys.exc_info()[0])
         
         best_model = min(models, key=models.get)
-        print (best_model, models[best_model])
         
         return best_model
 
@@ -112,7 +111,23 @@ class SelectorDIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on DIC scores
-        raise NotImplementedError
+        models = dict()      
+        try:
+            for states_number in range(self.min_n_components, self.max_n_components + 1):
+                model = self.base_model(states_number)
+                
+                dic = model.score(self.X, self.lengths)
+                
+                scores = [model.score(X, lengths) for word, (X, lengths) in self.hwords.items() if word != self.this_word]
+                dic -= np.mean(scores)
+                
+                models[model] = dic
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+        
+        best_model = max(models, key=models.get)
+        
+        return best_model
 
 
 class SelectorCV(ModelSelector):
