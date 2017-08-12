@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from asl_data import AslDb
-from my_model_selectors import (
+from my_model_selectors_advanced import (
     SelectorConstant, SelectorBIC, SelectorDIC, SelectorCV,
 )
 

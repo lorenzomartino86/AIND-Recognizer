@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from asl_data import AslDb
 from asl_utils import train_all_words
-from my_model_selectors import (
+from my_model_selectors_advanced import (
     SelectorConstant, SelectorBIC, SelectorDIC, SelectorCV,
 )
 from my_recognizer import recognize
