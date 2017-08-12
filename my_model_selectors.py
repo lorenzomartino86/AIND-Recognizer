@@ -139,5 +139,24 @@ class SelectorCV(ModelSelector):
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-        # TODO implement model selection using CV
-        raise NotImplementedError
+        models = dict()      
+        try:
+            for states_number in range(self.min_n_components, self.max_n_components + 1):
+                model = self.base_model(states_number)
+                
+                split_method = KFold(n_splits=2)
+                scores = list()
+                for cv_train_idx, cv_test_idx in split_method.split(self.sequences):
+                    self.X, self.lengths = combine_sequences(cv_train_idx, self.sequences)
+                    train_model = self.base_model(states_number)
+                    X, lengths = combine_sequences(cv_test_idx, self.sequences)
+                    score = train_model.score(X, lengths)
+                    scores.append(score)
+
+                models[model] = np.mean(scores)
+        except:
+            print ("Unexpected error:", sys.exc_info()[0])
+                    
+        best_model = max(models, key=models.get)
+        
+        return best_model
