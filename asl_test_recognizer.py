@@ -1,3 +1,5 @@
+import unittest
+import warnings
 from unittest import TestCase
 
 from asl_data import AslDb
@@ -25,4 +27,8 @@ class TestRecognize(TestCase):
         self.assertEqual(len(guesses), self.test_set.num_items, "Number of test items in guesses list incorrect.")
         self.assertIsInstance(guesses[0], str, "The guesses are not strings")
         self.assertIsInstance(guesses[-1], str, "The guesses are not strings")
+
+warnings.filterwarnings('ignore')
+suite = unittest.TestLoader().loadTestsFromModule(TestRecognize())
+unittest.TextTestRunner().run(suite)
 
